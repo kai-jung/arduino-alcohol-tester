@@ -2,7 +2,10 @@
 /* 정경진(건설환경공학부) 2020-2 창의공학설계 */
 
 #include <SoftwareSerial.h>
+#include <LiquidCrystal_I2C.h>
+
 SoftwareSerial BT_Serial(7,8);
+LiquidCrystal_I2C lcd(0x27,16,2);
 
 // Warmup variables
 int WARMUP_SECONDS = 3;
@@ -30,6 +33,8 @@ const int greenPin = 11;
 void setup() {
   BT_Serial.begin(9600);
   Serial.begin(9600);
+  lcd.begin();
+  lcd.backlight();
   pinMode(redPin, OUTPUT);
   pinMode(greenPin, OUTPUT);
 }
@@ -58,9 +63,10 @@ void loop()
     if (progress >= 100) {
       progress = 100;
     }
-    Serial.print("Warming up: ");
-    Serial.print(progress);
-    Serial.println("%");
+    lcd.setCursor(0,0);
+    lcd.print("Warming up: ");
+    lcd.print(progress);
+    lcd.println("%");
   }
   else
   {
@@ -92,6 +98,7 @@ void loop()
       } else {
         digitalWrite(greenPin, HIGH);
       }
+      delay(10000);
       is_done = false;
       is_ready = false;
     }
@@ -99,15 +106,23 @@ void loop()
 }
 
 void printReady() {
-  Serial.println("Press to start ...");
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.println("Press to start ...");
 }
 void printMeasure() {
-  Serial.println("Breathe until the sound beeps");
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.println("Breathe until");
+  lcd.setCursor(0,1);
+  lcd.println("the sound beeps");
 }
 void printAlcohol(int value) {
-  Serial.print("Sensor reading: ");
-  Serial.println(val);
-//  val = val + 500;
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Sensor reading: ");
+  lcd.setCursor(0,1);
+  lcd.print(val);
   char *info = "";
   if (val>300) {
     info = "면허 정지 수준입니다.";
